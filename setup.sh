@@ -21,6 +21,7 @@ sudo <<EOF
 	addpkg tree             # simple tool to show directory-structure as tree
 	addpkg openssh-server   # ssh-server
 	addpkg ruby             # used for tmuxinator
+	addpkg fonts-hack-ttf   # nice font (e.g. for vim)
 	apg-get install $pkgs
 
 	# disable ssh-server (not configured yet)
