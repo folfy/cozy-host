@@ -13,8 +13,17 @@ sudo <<EOF
 	# wireshark
 	apt-get install wireshark
 	usermod -a -G wireshark folfy
+	
+	# tools
+	addpkg tmux
+	addpkg vim-gtk3
+	
+	# system
+	addpkg gparted          # Main partition tool
+	addpkg partitionmanager # KDE Partition Manager (supports LVM)
 
 	# utils
+	addpkg htop             # Better process manager
 	addpkg curl             # Fetch text from URL easily
 	addpkg stow             # Symlink tool (used for dotfiles)
 	addpkg tig              # ncurses-based terminal git-frontend
