@@ -7,12 +7,12 @@ exec tail -n +3 $0
 #crude workaround, can't check if block-device exists this way
 #if [ -b (hd1,msdos1) ]; then
 if ! cmostest 15:0; then
-        menuentry "Windows 7 TAT (chainloader)" --class windows {
-                set root='(hd0,msdos1)'
-                drivemap -s hd0 hd1
-                chainloader (hd1)+1
+	menuentry "Windows 7 TAT (chainloader)" --class windows {
+		set root='(hd0,msdos1)'
+		drivemap -s hd0 hd1
+		chainloader (hd1)+1
 		normal_exit
 		sleep 1
-                boot
-        }
+		boot
+	}
 fi
