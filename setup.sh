@@ -1,18 +1,37 @@
 #! /usr/bin/env bash
 
-#
-# Reminders:
-#  xfce-terminal: colors, history, disable f10
+# TODO:
+# Username (folfy) hardcoded for wireshark-group
 #
 
-sudo <<EOF
+main() {
+	if [[ $1 == setup ]]; then
+		setup
+		exit $?
+	fi
+
+	if [[ $EUID == 0 ]]; then
+		setup
+	else
+		sudo "$0" "setup" "$@"
+	fi
+}
+
+
+
+setup() {
 	# Init package list
 	pkgs=""
 	addpkg() {pkgs+=" $@"}
 
 	# wireshark
-	apt-get install wireshark
+	# for unattended setup:
+	DEBIAN_FRONTEND=noninteractive apt-get -y install wireshark
+	# apt-get install wireshark
 	usermod -a -G wireshark folfy
+
+	# multimedia
+	snap install spotify
 	
 	# tools
 	addpkg tmux
@@ -39,4 +58,6 @@ sudo <<EOF
 
 	# tmuxinator requires ruby
 	gem install tmuxinator
-EOF
+}
+
+main "$@"
