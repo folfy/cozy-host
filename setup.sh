@@ -1,25 +1,68 @@
 #! /usr/bin/env bash
 
 # TODO:
-# Username (folfy) hardcoded for wireshark-group
-#
 
 main() {
-	if [[ $1 == setup ]]; then
-		setup
-		exit $?
-	fi
-
-	if [[ $EUID == 0 ]]; then
-		setup
+	if [[ $EUID == 0 ]] || [[ $1 == sudo ]]; then
+		hook
 	else
-		sudo "$0" "setup" "$@"
+		sudo "$0" sudo "$@"
 	fi
 }
 
+hook() {
+	local virt=$(vcheck)	
+	echo "Running setup on $(vtype $virt) host '$HOST' for user '$USER'"
+	read -p "Press enter to continue..."
 
+	if $virt; then
+		vsetup
+	fi
+	setup "$USER"
+	
+	read -t 10 -n 1 -p "Finished setup, rebooting in 10s - Press any key to abort..."
+}
+
+vcheck() {
+	# check if inside VM (setup virtualbox)
+	grep -q "^flags.*\ hypervisor" /proc/cpuinfo
+	echo $?
+}
+
+vtype() {
+	if $1; then
+		echo -n "physical"
+	else
+		echo -n "virtual"
+	fi
+}
+
+vsetup() {
+	vboxadd="/media/*/VBOXADDITIONS_*/autorun.sh
+	
+	while ! [ -f $vboxadd ]; do
+		echo "Could not find vbox additions DVD under path '$vboxadd'!"
+		prompt -p "Press enter to retry..."
+	done
+	
+	eval $vboxadd
+	eject /dev/dvd
+	
+}
 
 setup() {
+	# Swap optimization
+	echo "vm.swappiness=10
+vm.vfs_cache_pressure=50
+zswap.enabled=1" >> /etc/sysctl.conf
+
+	local user="$1"
+	# Update system
+	apt update
+	apt upgrade
+	apt full-upgrade
+
+	
 	# Init package list
 	pkgs=""
 	addpkg() {pkgs+=" $@"}
@@ -27,8 +70,8 @@ setup() {
 	# wireshark
 	# for unattended setup:
 	DEBIAN_FRONTEND=noninteractive apt-get -y install wireshark
-	# apt-get install wireshark
-	usermod -a -G wireshark folfy
+	# apt install wireshark
+	usermod -a -G wireshark "$user"
 
 	# multimedia
 	snap install spotify
@@ -41,16 +84,19 @@ setup() {
 	addpkg gparted          # Main partition tool
 	addpkg partitionmanager # KDE Partition Manager (supports LVM)
 
+	# remote access
+	addpkg openssh-server   # ssh-server
+	addpkg ss
+
 	# utils
 	addpkg htop             # Better process manager
 	addpkg curl             # Fetch text from URL easily
 	addpkg stow             # Symlink tool (used for dotfiles)
 	addpkg tig              # ncurses-based terminal git-frontend
 	addpkg tree             # simple tool to show directory-structure as tree
-	addpkg openssh-server   # ssh-server
 	addpkg ruby             # used for tmuxinator
 	addpkg fonts-hack-ttf   # nice font (e.g. for vim)
-	apg-get install $pkgs
+	apt install $pkgs
 
 	# disable ssh-server (not configured yet)
 	systemctl stop ssh
@@ -58,6 +104,10 @@ setup() {
 
 	# tmuxinator requires ruby
 	gem install tmuxinator
+	
+	# Cleanup
+	apt clean
+	apt autoremove
 }
 
 main "$@"
