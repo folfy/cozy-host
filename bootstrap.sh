@@ -12,7 +12,7 @@
 #  - runs the actual setup-script
 ###
 
-fname="$(mktemp folfy_bootstrap.XXXX)"
+fname="$(mktemp --tmpdir folfy_bootstrap.XXXX)"
 
 echo <<"EOF" >"$fname"
 #! /usr/bin/env bash
