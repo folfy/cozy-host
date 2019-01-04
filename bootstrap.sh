@@ -14,7 +14,7 @@
 
 fname="$(mktemp --tmpdir folfy_bootstrap.XXXX)"
 
-echo <<"EOF" >"$fname"
+echo >"$fname" <<"EOF"
 #! /usr/bin/env bash
 
 apt update && \
