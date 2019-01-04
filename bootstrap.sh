@@ -6,27 +6,11 @@
 # Bootstrap script for single command execution of the cozy-host setup.
 # Creates custom user with sudo-group, if not already logged in under preferred username.
 #
-# Runs temporary bootstrap-file under preferred or just created user:
-#  - installs git
-#  - shallow clone of repositroy
-#  - runs the actual setup-script
+# Performed setup:
+#  - install git
+#  - shallow clone of repository
+#  - run the actual setup-script
 ###
-
-fname="$(mktemp --tmpdir folfy_bootstrap.XXXX)"
-
-cat >"$fname" <<"EOF"
-#! /usr/bin/env bash
-
-apt update && \
-	apt install -y git
-
-cd "$HOME" && \
-	git clone --depth=5 https://github.com/folfy/cozy-host.git && \
-	cd cozy-host && \
-	./setup.sh || \
-	echo "Clone/setup failed!"
-EOF
-chmod +x "$fname"
 
 if [[ $USER != folfy ]] && [ $USER != ffritzer ]; then
 	read -p "Enter name for personal superuser to be created (folfy/ffritzer): " username
@@ -35,9 +19,18 @@ if [[ $USER != folfy ]] && [ $USER != ffritzer ]; then
 	sudo useradd $username
 	sudo usermod -a -G sudo $username
 	
-	userflags="-i -u $username"
+	user=$username
+else
+	user=$USER
 fi
 
-sudo $userflags "$fname"
+sudo apt update &&
+	sudo apt install -y git
 
-rm -f "$fname"
+sudo su $user <<"EOF"
+	#ensure correct user is logged in, and no root environment is used for clone
+	cd "$HOME" && \
+		git clone --depth=5 https://github.com/folfy/cozy-host.git && \
+		"$HOME/cozy-host/setup.sh" || \
+		echo "Clone/setup failed!"
+EOF
