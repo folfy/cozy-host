@@ -1,18 +1,17 @@
 #! /usr/bin/env bash
 
 # TODO:
+# load dotfiles
 
 main() {
-	if [[ $EUID -eq 0 ]]; then
-		hook
-	else
+	if [[ $EUID -ne 0 ]]; then
 		sudo "$0" "$@"
+		exit
 	fi
-}
 
-hook() {
 	local virt=$(vcheck)
 	local user="$(getuser)"
+	
 	echo "Running setup on $(vtype $virt) host '$HOST' for user '$user'"
 	read -p "Press enter to continue..."
 
@@ -21,6 +20,7 @@ hook() {
 	fi
 	
 	setup "$user"
+	# load dotfiles
 	
 	read -t 10 -n 1 -p "Finished setup, rebooting in 10s - Press any key to abort..."
 }
