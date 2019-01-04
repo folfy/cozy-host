@@ -14,7 +14,7 @@
 
 fname="$(mktemp --tmpdir folfy_bootstrap.XXXX)"
 
-echo >"$fname" <<"EOF"
+cat >"$fname" <<"EOF"
 #! /usr/bin/env bash
 
 apt update && \
@@ -26,6 +26,7 @@ cd "$HOME" && \
 	./setup.sh || \
 	echo "Clone/setup failed!"
 EOF
+chmod +x "$fname"
 
 if [[ $USER != folfy ]] && [ $USER != ffritzer ]; then
 	read -p "Enter name for personal superuser to be created (folfy/ffritzer): " username
