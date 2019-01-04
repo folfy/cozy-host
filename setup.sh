@@ -51,17 +51,17 @@ vsetup() {
 }
 
 setup() {
+	local user="$1"
+
 	# Swap optimization
 	echo "vm.swappiness=10
 vm.vfs_cache_pressure=50
 zswap.enabled=1" >> /etc/sysctl.conf
 
-	local user="$1"
 	# Update system
 	apt update
 	apt upgrade
 	apt full-upgrade
-
 	
 	# Init package list
 	pkgs=""
@@ -86,7 +86,6 @@ zswap.enabled=1" >> /etc/sysctl.conf
 
 	# remote access
 	addpkg openssh-server   # ssh-server
-	addpkg ss
 
 	# utils
 	addpkg htop             # Better process manager
@@ -96,6 +95,11 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	addpkg tree             # simple tool to show directory-structure as tree
 	addpkg ruby             # used for tmuxinator
 	addpkg fonts-hack-ttf   # nice font (e.g. for vim)
+	
+	# themes
+	addpkg numix-gtk-theme
+	addpkg numix-icon-theme
+
 	apt install $pkgs
 
 	# disable ssh-server (not configured yet)
