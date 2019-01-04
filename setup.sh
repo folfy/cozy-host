@@ -11,17 +11,17 @@ main() {
 
 	local virt=$(vcheck)
 	local user="$(getuser)"
-	
+
 	echo "Running setup on $(vtype $virt) host '$HOSTNAME' for user '$user'"
 	read -p "Press enter to continue..."
 
 	if $virt; then
 		vsetup
 	fi
-	
+
 	setup "$user"
 	# load dotfiles
-	
+
 	read -t 10 -n 1 -p "Finished setup, rebooting in 10s - Press any key to abort..."
 	reboot
 }
@@ -55,18 +55,17 @@ vtype() {
 
 vsetup() {
 	vboxadd="/media/*/VBOXADDITIONS_*/autorun.sh"
-	
+
 	while ! [ -f $vboxadd ]; do
 		echo "Could not find vbox additions DVD under path '$vboxadd'!"
 		prompt -p "Press enter to retry..."
 	done
-	
+
 	# build essentials for rebuilding the kernel (required)
 	sudo apt install -y build-essential gcc make perl dkms
 
 	eval $vboxadd
 	eject /dev/dvd
-	
 }
 
 setup() {
@@ -81,7 +80,7 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	apt -y update
 	apt -y upgrade
 	apt -y full-upgrade
-	
+
 	# Init package list
 	pkgs=""
 	addpkg(){ pkgs+=" $@";}
@@ -96,11 +95,11 @@ zswap.enabled=1" >> /etc/sysctl.conf
 
 	# multimedia
 	snap install spotify
-	
+
 	# tools
 	addpkg tmux
 	addpkg vim-gtk3
-	
+
 	# system
 	addpkg gparted          # Main partition tool
 	addpkg partitionmanager # KDE Partition Manager (supports LVM)
@@ -116,7 +115,7 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	addpkg tree             # simple tool to show directory-structure as tree
 	addpkg ruby             # used for tmuxinator
 	addpkg fonts-hack-ttf   # nice font (e.g. for vim)
-	
+
 	# themes
 	apt-add-repository -y ppa:numix/ppa
 	addpkg numix-gtk-theme
@@ -130,7 +129,7 @@ zswap.enabled=1" >> /etc/sysctl.conf
 
 	# tmuxinator requires ruby
 	gem install tmuxinator
-	
+
 	# Cleanup
 	apt clean
 	apt autoremove
