@@ -12,7 +12,7 @@ main() {
 	local virt=$(vcheck)
 	local user="$(getuser)"
 	
-	echo "Running setup on $(vtype $virt) host '$HOST' for user '$user'"
+	echo "Running setup on $(vtype $virt) host '$HOSTNAME' for user '$user'"
 	read -p "Press enter to continue..."
 
 	if $virt; then
@@ -23,6 +23,7 @@ main() {
 	# load dotfiles
 	
 	read -t 10 -n 1 -p "Finished setup, rebooting in 10s - Press any key to abort..."
+	reboot
 }
 
 getuser() {
@@ -46,20 +47,23 @@ vcheck() {
 
 vtype() {
 	if $1; then
-		echo -n "physical"
-	else
 		echo -n "virtual"
+	else
+		echo -n "physical"
 	fi
 }
 
 vsetup() {
-	vboxadd="/media/*/VBOXADDITIONS_*/autorun.sh
+	vboxadd="/media/*/VBOXADDITIONS_*/autorun.sh"
 	
 	while ! [ -f $vboxadd ]; do
 		echo "Could not find vbox additions DVD under path '$vboxadd'!"
 		prompt -p "Press enter to retry..."
 	done
 	
+	# build essentials for rebuilding the kernel (required)
+	sudo apt install -y build-essential gcc make perl dkms
+
 	eval $vboxadd
 	eject /dev/dvd
 	
@@ -74,18 +78,20 @@ vm.vfs_cache_pressure=50
 zswap.enabled=1" >> /etc/sysctl.conf
 
 	# Update system
-	apt update
-	apt upgrade
-	apt full-upgrade
+	apt -y update
+	apt -y upgrade
+	apt -y full-upgrade
 	
 	# Init package list
 	pkgs=""
-	addpkg() {pkgs+=" $@"}
+	addpkg(){ pkgs+=" $@";}
 
 	# wireshark
 	# for unattended setup:
 	DEBIAN_FRONTEND=noninteractive apt-get -y install wireshark
-	# apt install wireshark
+	echo "wireshark-common wireshark-common/install-setuid boolean true" | debconf-set-selections
+	DEBIAN_FRONTEND=noninteractive dpkg-reconfigure wireshark-common
+	# regular setup: apt install wireshark
 	usermod -a -G wireshark "$user"
 
 	# multimedia
