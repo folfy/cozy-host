@@ -31,6 +31,6 @@ sudo su $user <<"EOF"
 	#ensure correct user is logged in, and no root environment is used for clone
 	cd "$HOME" && \
 		git clone --depth=5 https://github.com/folfy/cozy-host.git && \
-		"$HOME/cozy-host/setup.sh" || \
+		"./cozy-host/setup.sh" || \
 		echo "Clone/setup failed!"
 EOF
