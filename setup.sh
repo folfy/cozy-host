@@ -97,8 +97,9 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	addpkg fonts-hack-ttf   # nice font (e.g. for vim)
 	
 	# themes
+	apt-add-repository -y ppa:numix/ppa
 	addpkg numix-gtk-theme
-	addpkg numix-icon-theme
+	addpkg numix-icon-theme-circle
 
 	apt install $pkgs
 
