@@ -3,24 +3,39 @@
 # TODO:
 
 main() {
-	if [[ $EUID == 0 ]] || [[ $1 == sudo ]]; then
+	if [[ $EUID -eq 0 ]]; then
 		hook
 	else
-		sudo "$0" sudo "$@"
+		sudo "$0" "$@"
 	fi
 }
 
 hook() {
-	local virt=$(vcheck)	
-	echo "Running setup on $(vtype $virt) host '$HOST' for user '$USER'"
+	local virt=$(vcheck)
+	local user="$(getuser)"
+	echo "Running setup on $(vtype $virt) host '$HOST' for user '$user'"
 	read -p "Press enter to continue..."
 
 	if $virt; then
 		vsetup
 	fi
-	setup "$USER"
+	
+	setup "$user"
 	
 	read -t 10 -n 1 -p "Finished setup, rebooting in 10s - Press any key to abort..."
+}
+
+getuser() {
+	if [[ $EUID -ne 0 ]]; then
+		echo "$USER"
+	elif [[ -n $SUDO_USER ]]; then
+		echo "$SUDO_USER"
+	elif [[ -n $LOGNAME ]]; then
+		echo "$LOGNAME"
+	else
+		echo "Failed to get username!"
+		return 1
+	fi
 }
 
 vcheck() {
@@ -101,7 +116,7 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	addpkg numix-gtk-theme
 	addpkg numix-icon-theme-circle
 
-	apt install $pkgs
+	apt install -y $pkgs
 
 	# disable ssh-server (not configured yet)
 	systemctl stop ssh
