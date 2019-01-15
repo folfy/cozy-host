@@ -72,6 +72,8 @@ setup() {
 	local user="$1"
 
 	# Swap optimization
+	#TODO: Set option via grep&sed&echo, avoid double entries (dedicated function)
+	# grep -q '^option' file && sed -i 's/^option.*/option=value/' file || echo 'option=value' >> file
 	echo "vm.swappiness=10
 vm.vfs_cache_pressure=50
 zswap.enabled=1" >> /etc/sysctl.conf
