@@ -1,0 +1,111 @@
+#conky engine
+own_window yes
+own_window_hints undecorated,below
+own_window_class Conky
+own_window_type desktop
+own_window_transparent yes
+
+#conky position
+alignment top_right
+gap_x 0
+gap_y 25
+
+#conky size
+maximum_width 250
+minimum_size 250 875
+
+#fonts and colors
+default_color cccccc
+default_outline_color cccccc
+default_shade_color cccccc
+use_xft yes
+font Ubuntu:size9
+xftfont Ubuntu:size=9
+uppercase no
+color0 000000 #black
+color1 ffffff #white
+color2 96d952 #mint green
+color3 ca051b #ubuntu red
+color4 ff6811 #ubuntu orange
+color5 fffb1f #ubuntu yellow
+color6 06204c #fedora blue
+color7 00ff00 #green
+color8 ff0000 #red
+
+#other settings
+background no
+border_width 1
+cpu_avg_samples 2
+double_buffer yes
+draw_borders no
+draw_graph_borders yes
+draw_outline no
+draw_shades no
+net_avg_samples 2
+no_buffers yes
+out_to_console no
+out_to_stderr no
+extra_newline no
+stippled_borders 0
+update_interval 2.0
+use_spacer none
+show_graph_scale yes
+show_graph_range no
+default_bar_size 135 10
+
+TEXT
+${alignr}${color5}${kernel}${color}
+${voffset 5}${goto 25}${USER} @ ${nodename} ${alignr}${sysname} ${machine}
+${font Ubuntu Mono:size=50}${goto 25}${time %H}${font Ubuntu Mono:size=20}${voffset -25}${goto 90}:${time %M}${font}
+${font Ubuntu Mono:size=20}${voffset -2}${goto 90} ${time %S}${font}
+${voffset -34}${alignr}${time %A %d}
+${alignr}${time %B %Y}
+${alignr}[ ${uptime} ]
+${voffset 10}${goto 25}bat ${goto 60}[ ${battery_percent}% ] ${alignr}${battery_bar}
+
+  ${font Ubuntu:style=Bold}${voffset -5}${color5}System ${stippled_hr}${color}${font}
+    core 1 ${goto 60}[ ${cpu cpu1}% ] ${alignr}${cpubar cpu1 10,135}
+    core 2 ${goto 60}[ ${cpu cpu2}% ] ${alignr}${cpubar cpu2 10,135}
+    ${alignc}${cpugraph cpu0 30, 232}    ${voffset 0}
+
+    ram ${goto 60}[ ${memperc}% ] ${alignr}${membar 10,135}
+    ${alignr}${memgraph 30,232}
+    ${voffset 0}swap ${goto 60}[ ${swapperc}% ] ${alignr}${swapbar 10,135}
+    ${voffset 5}${alignc}$mem / $memmax  -  ${alignc}$swap / $swapmax
+    ${voffset 5}name ${goto 130}pid ${goto 170}mem ${goto 220}cpu${font}
+    ${voffset -10}${stippled_hr}${font Ubuntu:size=8}
+      ${top_mem name 1} ${goto 130}${top_mem pid 1} ${goto 170} ${top_mem mem_res 1} ${goto 220} ${top_mem cpu 1}
+      ${top_mem name 2} ${goto 130}${top_mem pid 2} ${goto 170} ${top_mem mem_res 2} ${goto 220} ${top_mem cpu 2}
+      ${top_mem name 3} ${goto 130}${top_mem pid 3} ${goto 170} ${top_mem mem_res 3} ${goto 220} ${top_mem cpu 3}
+${voffset 60}
+  ${font Ubuntu:style=Bold}${voffset -5}${color5}Network ${stippled_hr}${color}${font}
+    ${if_existing /proc/net/route wlp12s0}${wireless_essid wlp12s0} [${wireless_link_qual_perc wlp12s0}%]${alignr}${wireless_bitrate wlp12s0}
+    local ip: ${alignr}${addrs wlp12s0}
+    ${else}no network connection !${endif}
+    ${upspeed wlp12s0}
+    ${totalup wlp12s0}
+    ${voffset -35}${alignr}${upspeedgraph wlp12s0 30,135}
+    ${downspeed wlp12s0}
+    ${totaldown wlp12s0}
+    ${voffset -30}${alignr}${downspeedgraph wlp12s0 30,135}
+
+  ${font Ubuntu:style=Bold}${voffset -10}${color5}Processes ${stippled_hr}${color}${font}
+    total/running: ${alignr}[${processes} / ${running_processes}]
+    ${voffset 5}name ${goto 130}pid ${goto 170}mem ${goto 220}cpu${font}
+    ${voffset -10}${stippled_hr}${font Ubuntu:size=8}
+      ${top name 1} ${goto 130}${top pid 1} ${goto 170} ${top mem_res 1} ${goto 220} ${top cpu 1}
+      ${top name 2} ${goto 130}${top pid 2} ${goto 170} ${top mem_res 2} ${goto 220} ${top cpu 2}
+      ${top name 3} ${goto 130}${top pid 3} ${goto 170} ${top mem_res 3} ${goto 220} ${top cpu 3}
+      ${top name 4} ${goto 130}${top pid 4} ${goto 170} ${top mem_res 4} ${goto 220} ${top cpu 4}
+      ${top name 5} ${goto 130}${top pid 5} ${goto 170} ${top mem_res 5} ${goto 220} ${top cpu 5}${font}
+
+  ${font Ubuntu:style=Bold}${voffset -5}${color5}Filesystem ${stippled_hr}${color}${font}
+    root ${goto 85}[${fs_used_perc /}%]${goto 120}${fs_bar 8,125 /}${font Ubuntu:size=8}
+        ${fs_type /}  ${goto 125}${fs_used /} / ${fs_size /} ${font}
+    home ${goto 85}[${fs_used_perc /home}%]${goto 120}${fs_bar 8,125 /home}${font Ubuntu:size=8}
+        ${fs_type /home}  ${goto 125}${fs_used /home} / ${fs_size /home} ${font}
+    tmp ${goto 85}[${fs_used_perc /tmp}%]${goto 120}${fs_bar 8,125 /tmp}${font Ubuntu:size=8}
+        ${fs_type /tmp}  ${goto 125}${fs_used /tmp} / ${fs_size /tmp} ${font}
+    ${if_mounted /media/tmp}removable ${goto 85}[${fs_used_perc /media/tmp}%]${goto 120}${fs_bar 8,125 /media/tmp}${font Ubuntu:size=8}
+        ${fs_type /media/tmp}  ${goto 125}${fs_used /media/tmp} / ${fs_size /media/tmp} ${font}${endif}
+
