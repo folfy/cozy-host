@@ -122,7 +122,13 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	apt-add-repository -y ppa:numix/ppa
 	addpkg numix-gtk-theme
 	addpkg numix-icon-theme-circle
+	
+	# veracrypt
+	apt-add-repository -y ppa:unit193/encryption
+	addpkg veracrypt
 
+	# update new repositories first
+	apt update
 	apt install -y $pkgs
 
 	# disable ssh-server (not configured yet)
