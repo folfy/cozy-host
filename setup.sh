@@ -86,6 +86,9 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	# Init package list
 	pkgs=""
 	addpkg(){ pkgs+=" $@";}
+	
+	# dependencies
+	addpkg default-jre      # java
 
 	# wireshark
 	# for unattended setup:
