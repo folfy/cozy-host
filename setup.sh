@@ -118,6 +118,8 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	addpkg stow             # Symlink tool (used for dotfiles)
 	addpkg tig              # ncurses-based terminal git-frontend
 	addpkg tree             # simple tool to show directory-structure as tree
+	addpkg ripgrep          # fast grep alternative
+	addpkg fzf              # fuzzy find tool
 	addpkg ruby             # used for tmuxinator
 	addpkg fonts-hack-ttf   # nice font (e.g. for vim)
 
