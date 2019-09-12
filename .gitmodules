@@ -1,4 +1,4 @@
 [submodule "dotfiles"]
 	path = dotfiles
-	url = https://folfy@github.com/folfy/dotfiles.git
+	url = https://github.com/folfy/dotfiles.git
 	branch = master
