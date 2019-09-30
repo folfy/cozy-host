@@ -15,7 +15,7 @@ main() {
 	echo "Running setup on $(vtype "$virt") host '$HOSTNAME' for user '$user'"
 	read -p "Press enter to continue..."
 
-	if [ -z "$virt" ]; then
+	if [ "$virt" -eq 0 ]; then
 		vsetup
 	fi
 
