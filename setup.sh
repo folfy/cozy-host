@@ -136,8 +136,9 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	addpkg numix-icon-theme-circle
 	
 	# veracrypt
-	apt-add-repository -y ppa:unit193/encryption
-	addpkg veracrypt
+	#not yet supporting ubuntu 19.10
+	#apt-add-repository -y ppa:unit193/encryption
+	#addpkg veracrypt
 
 	# update new repositories first
 	apt update
