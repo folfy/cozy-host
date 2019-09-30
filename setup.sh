@@ -60,7 +60,7 @@ vsetup() {
 
 	while ! [ -f $vboxadd ]; do
 		echo "Could not find vbox additions DVD under path '$vboxadd'!"
-		prompt -p "Press enter to retry..."
+		read -p "Press enter to retry..."
 	done
 
 	# build essentials for rebuilding the kernel (required)
