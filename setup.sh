@@ -9,13 +9,13 @@ main() {
 		exit
 	fi
 
-	local virt=$(vcheck)
+	local virt="$(vcheck)"
 	local user="$(getuser)"
 
-	echo "Running setup on $(vtype $virt) host '$HOSTNAME' for user '$user'"
+	echo "Running setup on $(vtype "$virt") host '$HOSTNAME' for user '$user'"
 	read -p "Press enter to continue..."
 
-	if $virt; then
+	if [ -n "$virt" ]; then
 		vsetup
 	fi
 
@@ -46,10 +46,12 @@ vcheck() {
 }
 
 vtype() {
-	if $1; then
+	if [ "$1" -eq 1 ]; then
 		echo -n "virtual"
-	else
+	elif [ "$1" -eq 0 ]; then
 		echo -n "physical"
+	else
+		echo "ERROR: Unknown return code \"$1\" from vcheck"
 	fi
 }
 
