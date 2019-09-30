@@ -57,11 +57,16 @@ vtype() {
 
 vsetup() {
 	vboxadd="/media/*/VBOXADDITIONS_*/autorun.sh"
+	vboxadd2="/media/*/VBox_GAs_*/autorun.sh"
 
-	while ! [ -f $vboxadd ]; do
-		echo "Could not find vbox additions DVD under path '$vboxadd'!"
+	while ! [ -f $vboxadd ] && ! [ -f $vboxadd2 ]; do
+		echo "Could not find vbox additions DVD under path '$vboxadd' or '$vboxadd2'!"
 		read -p "Press enter to retry..."
 	done
+	
+	if ! [ -f $vboxadd ]; then
+		vboxadd="$vboxadd2"
+	fi
 
 	# build essentials for rebuilding the kernel (required)
 	sudo apt install -y build-essential gcc make perl dkms
