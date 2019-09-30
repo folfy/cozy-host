@@ -15,7 +15,7 @@ main() {
 	echo "Running setup on $(vtype "$virt") host '$HOSTNAME' for user '$user'"
 	read -p "Press enter to continue..."
 
-	if [ -n "$virt" ]; then
+	if [ -z "$virt" ]; then
 		vsetup
 	fi
 
@@ -46,9 +46,9 @@ vcheck() {
 }
 
 vtype() {
-	if [ "$1" -eq 1 ]; then
+	if [ "$1" -eq 0 ]; then
 		echo -n "virtual"
-	elif [ "$1" -eq 0 ]; then
+	elif [ "$1" -eq 1 ]; then
 		echo -n "physical"
 	else
 		echo "ERROR: Unknown return code \"$1\" from vcheck"
