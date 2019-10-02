@@ -3,7 +3,14 @@
 # TODO:
 # load dotfiles
 
+# inherit traps in subfunctions
+set -E
+
 main() {
+	if [[ $1 == dotfiles ]]; then
+		dotfiles_runas
+		exit
+	fi
 	if [[ $EUID -ne 0 ]]; then
 		sudo "$0" "$@"
 		exit
@@ -20,7 +27,7 @@ main() {
 	fi
 
 	setup "$user"
-	# load dotfiles
+	dotfiles "$user"
 
 	read -t 10 -n 1 -p "Finished setup, rebooting in 10s - Press any key to abort..."
 	reboot
@@ -155,5 +162,33 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	apt clean
 	apt autoremove
 }
+
+dotfiles() {
+	echo "initializing dotfiles..."
+	su $1 -c "\"$0\" dotfiles"
+}
+
+dotfiles_runas() {
+	echo "dotfiles for $USER"
+	cd "$(dirname "$0")"
+	git submodule update --init
+	cd dotfiles
+	git checkout master
+	echo "Linking dotfiles"
+	./link.sh
+	echo "Running post-config script"
+	./postconfig.sh
+}
+
+errorhandler() {
+	echo "Error on line $1 - Command failed: '$2'"
+	read -p "Press enter to continue..."
+}
+
+# capture last command
+trap 'last_command=$BASH_COMMAND' DEBUG
+
+trap 'errorhandler "$LINENO" "$last_command"' ERR
+
 
 main "$@"
