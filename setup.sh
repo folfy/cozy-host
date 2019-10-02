@@ -128,6 +128,7 @@ zswap.enabled=1" >> /etc/sysctl.conf
 
 	# utils
 	addpkg htop             # Better process manager
+	addpkg expect           # Expect tcl scripting language
 	addpkg curl             # Fetch text from URL easily
 	addpkg stow             # Symlink tool (used for dotfiles)
 	addpkg tig              # ncurses-based terminal git-frontend
