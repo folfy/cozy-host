@@ -157,6 +157,7 @@ setup() {
 	addpkg curl             # Fetch text from URL easily
 	addpkg stow             # Symlink tool (used for dotfiles)
 	addpkg tig              # ncurses-based terminal git-frontend
+	# addpkg git-crypt        # encrypted file storage in git
 	addpkg tree             # simple tool to show directory-structure as tree
 	addpkg ripgrep          # fast grep alternative
 	addpkg fzf              # fuzzy find tool
@@ -236,6 +237,26 @@ xfce_conf_work() {
 	xfconf-query -c thunar-volman -p /autobrowse/enabled -s false
 }
 
+setup_virt() {
+	sudo apt-get install docker.io
+	sudo apt-get install virt-manager
+	sudo apt-get install ovmf #uefi support
+	sudo usermod -a -G libvirt $user
+	sudo usermod -a -G docker $user
+}
+
+enable_iommu() {
+	modconf "/etc/default/grub" "RUB_CMDLINE_LINUX_DEFAULT" "quiet splash intel_iommu=on iommu=pt"
+	modconf "/etc/default/grub" "RUB_CMDLINE_LINUX_DEFAULT" "quiet splash amd_iommu=on iommu=pt"
+	update-grub
+	# fetch groups:
+	# for g in /sys/kernel/iommu_groups/*; do
+	# 	echo "IOMMU Group ${g##*/}:"
+	# 	for d in $g/devices/*; do
+	# 		echo -e "\t$(lspci -nns ${d##*/})"
+	# 	done;
+	# done;
+}
 
 userconf() {
 	echo "initializing dotfiles..."
