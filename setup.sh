@@ -9,6 +9,8 @@ main() {
 		dotfiles
 		xfce_conf
 		exit
+	elif [[ -n $1 ]]; then
+		local user="$1"
 	fi
 	if [[ $EUID -ne 0 ]]; then
 		sudo "$0" "$@"
@@ -35,7 +37,9 @@ main() {
 }
 
 getuser() {
-	if [[ $EUID -ne 0 ]]; then
+	if [[ -n $user ]]; then
+		echo "$user"
+	elif [[ $EUID -ne 0 ]]; then
 		echo "$USER"
 	elif [[ -n $SUDO_USER ]]; then
 		echo "$SUDO_USER"
@@ -235,7 +239,7 @@ xfce_conf_work() {
 
 userconf() {
 	echo "initializing dotfiles..."
-	su $1 -c "\"$0\" userconf"
+	su $1 -c "'$0' userconf"
 }
 
 dotfiles() {
