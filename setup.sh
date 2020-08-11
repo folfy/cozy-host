@@ -26,6 +26,7 @@ main() {
 	fi
 
 	setup "$user"
+	grubtheme
 	userconf "$user"
 
 	read -t 10 -n 1 -p "Finished setup, rebooting in 10s - Press any key to abort..."
@@ -181,6 +182,16 @@ setup() {
 	# Cleanup
 	apt clean
 	apt autoremove
+}
+
+grubtheme() {
+	if ! [ -d grub2-themes ]; then
+		git clone --depth 1 https://github.com/vinceliuice/grub2-themes
+	fi
+	cd grub2-themes
+	git pull
+	sudo ./install.sh -b -v
+	cd ..
 }
 
 xfce_conf(){
