@@ -26,6 +26,7 @@ main() {
 	fi
 
 	setup "$user"
+	grubconf
 	grubtheme
 	userconf "$user"
 
@@ -182,6 +183,14 @@ setup() {
 	# Cleanup
 	apt clean
 	apt autoremove
+}
+
+grubconf() {
+	# patch recordfail timeout from 30s to 3s
+	# workaround for bug on UEFI system with LVM to always trigger this
+	# http://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1815002
+	modconf "/etc/default/grub" "GRUB_RECORDFAIL_TIMEOUT" 3
+	sudo grub-update
 }
 
 grubtheme() {
