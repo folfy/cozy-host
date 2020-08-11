@@ -1,14 +1,13 @@
 #! /usr/bin/env bash
 
-# TODO:
-# load dotfiles
-
 # inherit traps in subfunctions
 set -E
 
 main() {
-	if [[ $1 == dotfiles ]]; then
-		dotfiles_runas
+	if [[ $1 == userconf ]]; then
+		# helper to run configuration steps as desired user
+		dotfiles
+		xfce_conf
 		exit
 	fi
 	if [[ $EUID -ne 0 ]]; then
@@ -27,7 +26,7 @@ main() {
 	fi
 
 	setup "$user"
-	dotfiles "$user"
+	userconf "$user"
 
 	read -t 10 -n 1 -p "Finished setup, rebooting in 10s - Press any key to abort..."
 	reboot
@@ -184,12 +183,33 @@ setup() {
 	apt autoremove
 }
 
-dotfiles() {
-	echo "initializing dotfiles..."
-	su $1 -c "\"$0\" dotfiles"
+xfce_conf(){
+	xfconf-query -c xfwm4 -p /general/theme -s Numix
+	xfconf-query -c xsettings -p /Net/ThemeName -s Numix
+	xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s "Hack 9"
+	xfconf-query -c xfce4-power-manager -p /xfc4-power-manager/power-button-action -s 4
+
+	if [ "$(vcheck)" -eq 0 ]; then
+		xfconf-query -c xfce4-screensaver -p /saver/enabled -s false
+		xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-enabled -s false
+		xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac -s 0
+	fi
 }
 
-dotfiles_runas() {
+xfce_conf_work() {
+	# disable automount
+	xfconf-query -c thunar-volman -p /automount-drives/enabled -s false
+	xfconf-query -c thunar-volman -p /automount-media/enabled -s false
+	xfconf-query -c thunar-volman -p /autobrowse/enabled -s false
+}
+
+
+userconf() {
+	echo "initializing dotfiles..."
+	su $1 -c "\"$0\" userconf"
+}
+
+dotfiles() {
 	echo "dotfiles for $USER"
 	cd "$(dirname "$0")"
 	git submodule update --init
@@ -206,9 +226,8 @@ errorhandler() {
 	read -p "Press enter to continue..."
 }
 
-# capture last command
+# capture last command for errorhandler
 trap 'last_command=$BASH_COMMAND' DEBUG
-
 trap 'errorhandler "$LINENO" "$last_command"' ERR
 
 
