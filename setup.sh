@@ -186,11 +186,20 @@ setup() {
 }
 
 grubconf() {
+	# make os selectable before reboot via "grub-reboot <os-num>"
+	# modconf "/etc/default/grub" "GRUB_DEFAULT" "saved"
+
+	# always show grub, even if only one os was found
+	# modconf "/etc/default/grub" "GRUB_TIMEOUT_STYLE" menu
+	# modconf "/etc/default/grub" "GRUB_TIMEOUT" 3
+
 	# patch recordfail timeout from 30s to 3s
-	# workaround for bug on UEFI system with LVM to always trigger this
+	# workaround for bug on systems with LVM to always trigger this
 	# http://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1815002
 	modconf "/etc/default/grub" "GRUB_RECORDFAIL_TIMEOUT" 3
+
 	sudo grub-update
+	# grub-set-default 0
 }
 
 grubtheme() {
