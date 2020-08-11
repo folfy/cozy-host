@@ -62,6 +62,19 @@ vtype() {
 	fi
 }
 
+modconf() {
+	# set option if file if not existing yet, otherwise modify line
+	file="$1"
+	option="$2"
+	value="$3"
+
+	if grep -q "^$option" "$file"; then
+		sed -i "s/^$option.*/$option=$value/" "$file"
+	else
+		echo "$option=$value" >> "$file"
+	fi
+}
+
 vsetup() {
 	vboxadd="/media/*/VBOXADDITIONS_*/autorun.sh"
 	vboxadd2="/media/*/VBox_GAs_*/autorun.sh"
@@ -70,7 +83,7 @@ vsetup() {
 		echo "Could not find vbox additions DVD under path '$vboxadd' or '$vboxadd2'!"
 		read -p "Press enter to retry..."
 	done
-	
+
 	if ! [ -f $vboxadd ]; then
 		vboxadd="$vboxadd2"
 	fi
@@ -79,18 +92,25 @@ vsetup() {
 	sudo apt install -y build-essential gcc make perl dkms
 
 	eval $vboxadd
-	eject /dev/dvd
+	if [ -b /dev/cdrom ]; then
+		eject /dev/cdrom
+	elif [ -b /dev/sr0 ]; then
+		eject /dev/sr0
+	elif [ -b /dev/dvd ]; then
+		eject /dev/dvd
+	else
+		read -p "Cannot eject DVD, please remove disk manually, and press enter to continue..."
+	fi
 }
 
 setup() {
 	local user="$1"
 
 	# Swap optimization
-	#TODO: Set option via grep&sed&echo, avoid double entries (dedicated function)
-	# grep -q '^option' file && sed -i 's/^option.*/option=value/' file || echo 'option=value' >> file
-	echo "vm.swappiness=10
-vm.vfs_cache_pressure=50
-zswap.enabled=1" >> /etc/sysctl.conf
+	modconf "/etc/sysctl.conf" "vm.swappiness" 20
+	# modconf "/etc/sysctl.conf" "vm.vfs_cache_pressure" 50
+	modconf "/etc/sysctl.conf" "zswap.enabled" 1
+	modconf "/etc/sysctl.conf" "zswap.max_pool_percent" 25
 
 	# Update system
 	apt -y update
@@ -100,7 +120,7 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	# Init package list
 	pkgs=""
 	addpkg(){ pkgs+=" $@";}
-	
+
 	# dependencies
 	addpkg default-jre      # java
 
@@ -137,14 +157,14 @@ zswap.enabled=1" >> /etc/sysctl.conf
 	addpkg fzf              # fuzzy find tool
 	addpkg ruby             # used for tmuxinator
 	addpkg fonts-hack-ttf   # nice font (e.g. for vim)
+	# addpkg fonts-powerline  # fonts pached for powerline
 
 	# themes
 	apt-add-repository -y ppa:numix/ppa
 	addpkg numix-gtk-theme
 	addpkg numix-icon-theme-circle
-	
+
 	# veracrypt
-	#not yet supporting ubuntu 19.10
 	#apt-add-repository -y ppa:unit193/encryption
 	#addpkg veracrypt
 
