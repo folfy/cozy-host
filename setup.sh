@@ -72,8 +72,8 @@ vtype() {
 modconf() {
 	# set option if file if not existing yet, otherwise modify line
 	file="$1"
-	option="$2"
-	value="$3"
+	option="${2%%=*}"
+	value="${2#*=}"
 
 	if grep -q "^$option" "$file"; then
 		sed -i "s/^$option.*/$option=$value/" "$file"
@@ -114,10 +114,10 @@ setup() {
 	local user="$1"
 
 	# Swap optimization
-	modconf "/etc/sysctl.conf" "vm.swappiness" 20
-	# modconf "/etc/sysctl.conf" "vm.vfs_cache_pressure" 50
-	modconf "/etc/sysctl.conf" "zswap.enabled" 1
-	modconf "/etc/sysctl.conf" "zswap.max_pool_percent" 25
+	modconf "/etc/sysctl.conf" "vm.swappiness=20"
+	# modconf "/etc/sysctl.conf" "vm.vfs_cache_pressure=50"
+	modconf "/etc/sysctl.conf" "zswap.enabled=1"
+	modconf "/etc/sysctl.conf" "zswap.max_pool_percent=25"
 
 	# Update system
 	apt -y update
@@ -194,16 +194,16 @@ setup() {
 
 grubconf() {
 	# make os selectable before reboot via "grub-reboot <os-num>"
-	# modconf "/etc/default/grub" "GRUB_DEFAULT" "saved"
+	# modconf "/etc/default/grub" "GRUB_DEFAULT=saved"
 
 	# always show grub, even if only one os was found
-	# modconf "/etc/default/grub" "GRUB_TIMEOUT_STYLE" menu
-	# modconf "/etc/default/grub" "GRUB_TIMEOUT" 3
+	# modconf "/etc/default/grub" "GRUB_TIMEOUT_STYLE=menu"
+	# modconf "/etc/default/grub" "GRUB_TIMEOUT=3"
 
 	# patch recordfail timeout from 30s to 3s
 	# workaround for bug on systems with LVM to always trigger this
 	# http://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1815002
-	modconf "/etc/default/grub" "GRUB_RECORDFAIL_TIMEOUT" 3
+	modconf "/etc/default/grub" "GRUB_RECORDFAIL_TIMEOUT=3"
 
 	sudo update-grub
 	# grub-set-default 0
@@ -239,6 +239,29 @@ xfce_conf_work() {
 	xfconf-query -c thunar-volman -p /autobrowse/enabled -nt bool -s false
 }
 
+xfce_terminal_conf() {
+	local termcfg="~/.config/xfce4/terminal/terminalrc"
+	if [ -f "$termcfg" ]; then
+		modconf "$termcfg" "ColorForeground=#839496"
+		modconf "$termcfg" "TabActivityColor=#dc322f"
+		modconf "$termcfg" "ColorForeground=#839496"
+		modconf "$termcfg" "ColorBackground=#002b36"
+		modconf "$termcfg" "ColorCursor=#93a1a1"
+		modconf "$termcfg" "ColorBold=#93a1a1"
+		modconf "$termcfg" "ColorPalette=#073642;#dc322f;#859900;#b58900;#268bd2;#d33682;#2aa198;#eee8d5;#002b36;#cb4b16;#586e75;#657b83;#839496;#6c71c4;#93a1a1;#fdf6e3"
+		modconf "$termcfg" "FontName=DejaVu Sans Mono 8"
+		modconf "$termcfg" "ShortcutsNoMenukey=TRUE"
+		modconf "$termcfg" "ScrollingLines=20000"
+		modconf "$termcfg" "MiscScrollAlternateScreen=TRUE"
+		modconf "$termcfg" "ShortcutsNoMnemonics=TRUE"
+		modconf "$termcfg" "FontUseSystem=TRUE"
+		modconf "$termcfg" "MiscShowUnsafePasteDialog=FALSE"
+		modconf "$termcfg" "TabActivityColor=#dc322f"
+	else
+		cp "dotfiles/xfce/.config/xfce4/terminal/terminalrc" "$termcfg"
+	fi
+}
+
 setup_virt() {
 	sudo apt-get install docker.io
 	sudo apt-get install virt-manager
@@ -248,8 +271,8 @@ setup_virt() {
 }
 
 enable_iommu() {
-	modconf "/etc/default/grub" "RUB_CMDLINE_LINUX_DEFAULT" "quiet splash intel_iommu=on iommu=pt"
-	modconf "/etc/default/grub" "RUB_CMDLINE_LINUX_DEFAULT" "quiet splash amd_iommu=on iommu=pt"
+	modconf "/etc/default/grub" 'RUB_CMDLINE_LINUX_DEFAULT="quiet splash intel_iommu=on iommu=pt"'
+	modconf "/etc/default/grub" 'RUB_CMDLINE_LINUX_DEFAULT="quiet splash amd_iommu=on iommu=pt"'
 	update-grub
 	# fetch groups:
 	# for g in /sys/kernel/iommu_groups/*; do
