@@ -32,7 +32,9 @@ main() {
 	grubtheme
 	userconf "$user"
 
-	read -t 10 -n 1 -p "Finished setup, rebooting in 10s - Press any key to continue..."
+	read -t 10 -n 1 -p "Finished setup, rebooting in 10s - Press any key to continue..." || true
+	echo "Rebooting now"
+	sleep 1
 	reboot
 }
 
