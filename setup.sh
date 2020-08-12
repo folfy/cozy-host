@@ -6,8 +6,8 @@ set -E
 main() {
 	if [[ $1 == userconf ]]; then
 		# helper to run configuration steps as desired user
-		dotfiles
 		xfce_conf
+		dotfiles
 		exit
 	elif [[ -n $1 ]]; then
 		local user="$1"
@@ -187,7 +187,7 @@ setup() {
 
 	# Cleanup
 	apt clean
-	apt autoremove
+	apt autoremove -y
 }
 
 grubconf() {
@@ -203,7 +203,7 @@ grubconf() {
 	# http://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1815002
 	modconf "/etc/default/grub" "GRUB_RECORDFAIL_TIMEOUT" 3
 
-	sudo grub-update
+	sudo update-grub
 	# grub-set-default 0
 }
 
@@ -218,23 +218,23 @@ grubtheme() {
 }
 
 xfce_conf(){
-	xfconf-query -c xfwm4 -p /general/theme -s Numix
-	xfconf-query -c xsettings -p /Net/ThemeName -s Numix
-	xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s "Hack 9"
-	xfconf-query -c xfce4-power-manager -p /xfc4-power-manager/power-button-action -s 4
+	xfconf-query -c xfwm4 -p /general/theme -nt string -s Numix
+	xfconf-query -c xsettings -p /Net/ThemeName -nt string -s Numix
+	xfconf-query -c xsettings -p /Gtk/MonospaceFontName -nt string -s "Hack 9"
+	xfconf-query -c xfce4-power-manager -p /xfc4-power-manager/power-button-action -nt int -s 4
 
 	if [ "$(vcheck)" -eq 0 ]; then
-		xfconf-query -c xfce4-screensaver -p /saver/enabled -s false
-		xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-enabled -s false
-		xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac -s 0
+		xfconf-query -c xfce4-screensaver -p /saver/enabled -nt bool -s false
+		xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-enabled -nt bool -s false
+		xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac -nt int -s 0
 	fi
 }
 
 xfce_conf_work() {
 	# disable automount
-	xfconf-query -c thunar-volman -p /automount-drives/enabled -s false
-	xfconf-query -c thunar-volman -p /automount-media/enabled -s false
-	xfconf-query -c thunar-volman -p /autobrowse/enabled -s false
+	xfconf-query -c thunar-volman -p /automount-drives/enabled -nt bool -s false
+	xfconf-query -c thunar-volman -p /automount-media/enabled -nt bool -s false
+	xfconf-query -c thunar-volman -p /autobrowse/enabled -nt bool -s false
 }
 
 setup_virt() {
