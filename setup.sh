@@ -223,7 +223,7 @@ xfce_conf(){
 	xfconf-query -c xfwm4 -p /general/theme -nt string -s Numix
 	xfconf-query -c xsettings -p /Net/ThemeName -nt string -s Numix
 	xfconf-query -c xsettings -p /Gtk/MonospaceFontName -nt string -s "Hack 9"
-	xfconf-query -c xfce4-power-manager -p /xfc4-power-manager/power-button-action -nt int -s 4
+	xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/power-button-action -nt uint -s 4
 
 	if [ "$(vcheck)" -eq 0 ]; then
 		xfconf-query -c xfce4-screensaver -p /saver/enabled -nt bool -s false
