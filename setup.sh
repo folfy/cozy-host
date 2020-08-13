@@ -159,6 +159,7 @@ setup() {
 	addpkg curl             # Fetch text from URL easily
 	addpkg stow             # Symlink tool (used for dotfiles)
 	addpkg tig              # ncurses-based terminal git-frontend
+	addpkg zstd		# zstd compression library
 	# addpkg git-crypt        # encrypted file storage in git
 	addpkg tree             # simple tool to show directory-structure as tree
 	addpkg ripgrep          # fast grep alternative
