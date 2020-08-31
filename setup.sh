@@ -271,6 +271,12 @@ setup_virt() {
 	sudo usermod -a -G docker $user
 }
 
+# @todo Call for server
+setup_server() {
+	sudo snap install canonical-livepatch
+	sudo canonical-livepatch enable <secret>
+}
+
 enable_iommu() {
 	modconf "/etc/default/grub" 'RUB_CMDLINE_LINUX_DEFAULT="quiet splash intel_iommu=on iommu=pt"'
 	modconf "/etc/default/grub" 'RUB_CMDLINE_LINUX_DEFAULT="quiet splash amd_iommu=on iommu=pt"'
