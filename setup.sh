@@ -166,7 +166,7 @@ setup() {
 	addpkg fzf              # fuzzy find tool
 	addpkg ruby             # used for tmuxinator
 	addpkg fonts-hack-ttf   # nice font (e.g. for vim)
-	# addpkg fonts-powerline  # fonts pached for powerline
+	addpkg powerline        # fonts pached for powerline
 
 	# themes
 	apt-add-repository -y ppa:numix/ppa
