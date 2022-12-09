@@ -141,6 +141,9 @@ setup() {
 
 	# multimedia
 	snap install spotify
+	
+	# quick cheatsheets
+	snap install cheat
 
 	# tools
 	addpkg tmux
